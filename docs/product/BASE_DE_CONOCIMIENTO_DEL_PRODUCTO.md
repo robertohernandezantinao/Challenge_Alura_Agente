@@ -20,13 +20,7 @@
 
 \---
 
-Objetivo
 
-Este documento será la fuente oficial de conocimiento sobre el producto Nexa Knowledge AI.
-
-Su propósito es describir de forma integral la plataforma, su funcionamiento, arquitectura funcional, módulos, conceptos y comportamiento esperado para usuarios, desarrolladores, soporte técnico y el agente de inteligencia artificial.
-
-Toda la documentación posterior deberá ser consistente con este documento.
 
 \# 1. Introducción
 
