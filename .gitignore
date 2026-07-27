@@ -1,0 +1,31 @@
+# Entornos virtuales
+.venv/
+venv/
+
+# Variables de entorno
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+
+# VS Code
+.vscode/
+
+# Bases de datos
+*.db
+*.db-shm
+*.db-wal
+checkpoints.db
+.DS_Store
+
+# Índices vectoriales
+vectorstore_index/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
