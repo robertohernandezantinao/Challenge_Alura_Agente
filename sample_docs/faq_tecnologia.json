@@ -1,0 +1,20 @@
+{
+  "preguntas_frecuentes": [
+    {
+      "pregunta": "¿Qué lenguajes de programación se usan en el back-end de la plataforma de ventas?",
+      "respuesta": "El back-end de la plataforma de ventas está escrito en Python, usando FastAPI como framework web, PostgreSQL como base de datos principal y Redis para caché. La orquestación de tareas asíncronas se realiza con Celery."
+    },
+    {
+      "pregunta": "¿Qué tecnología se usa para el front-end?",
+      "respuesta": "El front-end está construido con React y TypeScript, utilizando Tailwind CSS para los estilos."
+    },
+    {
+      "pregunta": "¿Dónde está desplegada la plataforma?",
+      "respuesta": "La plataforma corre sobre contenedores Docker orquestados con Kubernetes, desplegados en Google Cloud Platform."
+    },
+    {
+      "pregunta": "¿Qué herramienta se usa para monitoreo?",
+      "respuesta": "Se utiliza Prometheus para métricas y Grafana para los dashboards de monitoreo."
+    }
+  ]
+}
