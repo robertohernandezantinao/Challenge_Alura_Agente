@@ -243,7 +243,7 @@ Este proyecto está pensado para desplegarse en servicios como **Hugging Face Sp
 
 > 📸 *Agrega aquí una imagen o video del agente ejecutándose en la nube, como pide
 > el desafío.*
-
+![alt text](image-2.png)
 ---
 
 ## 🛠️ Tecnologías utilizadas
