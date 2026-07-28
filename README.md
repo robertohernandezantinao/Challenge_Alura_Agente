@@ -28,7 +28,7 @@ El proyecto tiene dos grandes componentes:
 Lee documentos en múltiples formatos —**PDF, Word (.docx), Excel (.xlsx/.xls), CSV,
 PowerPoint (.pptx), Markdown, JSON y HTML**—, los normaliza a un formato común
 (`Document` de LangChain), los divide en fragmentos (chunks) y genera embeddings
-con el modelo `text-embedding-004` de Gemini. Estos embeddings se guardan en un
+con el modelo `gemini-embedding-001` de Gemini. Estos embeddings se guardan en un
 índice vectorial **FAISS** en disco (`vectorstore_index/`).
 
 ### 2. Agente conversacional con LangGraph (`agent.py`)
@@ -119,8 +119,10 @@ Edita `.env` y agrega tu `GEMINI_API_KEY` (obligatoria) y, si quieres respaldo c
 búsqueda web, tu `TAVILY_API_KEY` (opcional).
 
 ### 4. Generar el índice vectorial con los documentos
-Puedes usar los documentos de ejemplo incluidos en `sample_docs/`, o reemplazarlos
-por tus propios archivos (PDF, DOCX, XLSX, CSV, PPTX, MD, JSON o HTML):
+El script procesa automáticamente `docs/` (documentación curada de la empresa, organizada
+por categoría: `docs/company/`, `docs/product/`, `docs/ai/`, `docs/hr/`, etc.) y `sample_docs/`
+(archivos sueltos o de prueba), combinando ambas carpetas en un solo índice. Formatos
+soportados: PDF, DOCX, XLSX, CSV, PPTX, Markdown, JSON y HTML.
 ```bash
 python ingestion.py
 ```
@@ -145,7 +147,6 @@ Este proyecto está pensado para desplegarse en servicios como **Hugging Face Sp
 4. Define el comando de arranque: `python app.py`.
 
 > 📸 *Agrega aquí una imagen o video del agente ejecutándose en la nube, como pide
-![alt text](image-1.png)
 > el desafío.*
 
 ---
@@ -175,11 +176,27 @@ agente-corporativo/
 ├── .env.example
 ├── .gitignore
 ├── README.md
-└── sample_docs/
-    ├── politica_rrhh.md
-    ├── ventas_2015.csv
-    └── faq_tecnologia.json
+├── docs/                    # Documentación curada de la empresa, por categoría
+│   ├── company/
+│   ├── product/
+│   ├── user-guide/
+│   ├── ai/
+│   ├── api/
+│   ├── admin/
+│   ├── security/
+│   ├── engineering/
+│   ├── devops/
+│   ├── support/
+│   ├── business/
+│   ├── legal/
+│   └── hr/
+└── sample_docs/             # Archivos sueltos / de prueba, subidos desde la interfaz
 ```
+
+Cada fragmento recuperado del índice conserva dos metadatos útiles: `source` (ruta relativa,
+ej. `product/Roadmap del Producto.md`) y `area` (la subcarpeta de primer nivel, ej. `product`),
+lo que permite escalar de 40 a 97 documentos sin cambiar el código de ingestión — solo hay
+que agregar archivos dentro de las subcarpetas correspondientes de `docs/`.
 
 ---
 
