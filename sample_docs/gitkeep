@@ -1,0 +1,4 @@
+Esta carpeta está intencionalmente vacía en el repositorio.
+La usa app.py como destino de los archivos que se suban manualmente
+desde la interfaz (pestaña "Cargar documentos"). El corpus curado y
+versionado de la empresa vive en docs/.
