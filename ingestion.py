@@ -15,6 +15,7 @@ Flujo:
 """
 import os
 import json
+import time
 import pandas as pd
 from bs4 import BeautifulSoup
 from langchain_core.documents import Document
@@ -39,7 +40,7 @@ def _load_pdf(path):
         text = page.extract_text() or ""
         if text.strip():
             docs.append(Document(page_content=text,
-                                 metadata={"source": os.path.basename(path), "page": i + 1}))
+                                  metadata={"source": os.path.basename(path), "page": i + 1}))
     return docs
 
 
@@ -62,7 +63,7 @@ def _load_pptx(path):
         content = "\n".join(t for t in texts if t.strip())
         if content.strip():
             docs.append(Document(page_content=content,
-                                 metadata={"source": os.path.basename(path), "slide": i + 1}))
+                                  metadata={"source": os.path.basename(path), "slide": i + 1}))
     return docs
 
 
@@ -73,7 +74,7 @@ def _load_excel(path):
         df = xls.parse(sheet_name)
         content = df.to_markdown(index=False)
         docs.append(Document(page_content=content,
-                             metadata={"source": os.path.basename(path), "sheet": sheet_name}))
+                              metadata={"source": os.path.basename(path), "sheet": sheet_name}))
     return docs
 
 
@@ -94,8 +95,7 @@ def _load_html(path):
     with open(path, "r", encoding="utf-8") as f:
         soup = BeautifulSoup(f.read(), "html.parser")
     text = soup.get_text(separator="\n")
-    text = "\n".join(line.strip()
-                     for line in text.splitlines() if line.strip())
+    text = "\n".join(line.strip() for line in text.splitlines() if line.strip())
     return [Document(page_content=text, metadata={"source": os.path.basename(path)})]
 
 
@@ -122,8 +122,20 @@ LOADERS = {
 
 
 def load_documents(folder_path: str):
-    """Recorre una carpeta (recursivamente) y carga todos los documentos soportados."""
+    """Recorre una carpeta (recursivamente, incluyendo subcarpetas por categoría, p. ej.
+    docs/company/, docs/product/, docs/ai/, etc.) y carga todos los documentos soportados.
+
+    A cada fragmento se le asigna:
+      - metadata["source"] -> ruta relativa a folder_path (ej. "product/Roadmap del Producto.md"),
+        para no perder el contexto de categoría cuando hay nombres de archivo repetidos.
+      - metadata["area"]   -> la primera carpeta bajo folder_path (ej. "product", "ai", "hr"),
+        útil para filtrar o etiquetar respuestas por dominio en el futuro.
+    """
     all_docs = []
+    if not os.path.isdir(folder_path):
+        print(f"⚠️  La carpeta '{folder_path}' no existe, se omite.")
+        return all_docs
+
     for root, _, files in os.walk(folder_path):
         for filename in files:
             ext = os.path.splitext(filename)[1].lower()
@@ -133,38 +145,80 @@ def load_documents(folder_path: str):
             loader_fn = LOADERS.get(ext)
             try:
                 docs = loader_fn(full_path)
+                rel_path = os.path.relpath(full_path, folder_path).replace(os.sep, "/")
+                area = rel_path.split("/")[0] if "/" in rel_path else "general"
+                for d in docs:
+                    d.metadata["source"] = rel_path
+                    d.metadata["area"] = area
                 all_docs.extend(docs)
-                print(f"✅ Cargado: {filename} ({len(docs)} fragmento(s))")
+                print(f"✅ Cargado: {rel_path} ({len(docs)} fragmento(s))")
             except Exception as e:
                 print(f"⚠️  No se pudo cargar {filename}: {e}")
     return all_docs
 
 
-def build_vectorstore(docs, persist_path="vectorstore_index", chunk_size=1000, chunk_overlap=150):
-    """Divide los documentos en chunks, genera embeddings y crea/guarda el índice FAISS."""
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    chunks = splitter.split_documents(docs)
+def load_all_documents(folders=("docs", "sample_docs")):
+    """Combina varias carpetas raíz en un solo corpus (ej. 'docs/' con la documentación
+    curada de la empresa + 'sample_docs/' con lo que se suba manualmente desde la interfaz).
+    Carpetas que no existan se ignoran sin error, así se puede escalar de 40 a 97 documentos
+    simplemente agregando archivos dentro de las mismas subcarpetas de 'docs/'."""
+    all_docs = []
+    for folder in folders:
+        all_docs.extend(load_documents(folder))
+    return all_docs
 
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/gemini-embedding-001")
-    vectorstore = FAISS.from_documents(chunks, embeddings)
+
+def build_vectorstore(docs, persist_path="vectorstore_index", chunk_size=1000, chunk_overlap=150,
+                       batch_size=80, delay_seconds=61):
+    """Divide los documentos en chunks, genera embeddings EN LOTES (con pausas entre cada
+    lote) y crea/guarda el índice FAISS.
+
+    El tier gratuito de la API de Gemini limita las solicitudes de embeddings a ~100 por
+    minuto. Con corpus grandes (decenas de documentos), enviar todos los chunks de una sola
+    vez dispara un error 429 RESOURCE_EXHAUSTED. Por eso aquí se procesan de a `batch_size`
+    fragmentos (por defecto 80, con margen respecto al límite de 100) y se espera
+    `delay_seconds` (por defecto 61, un poco más de un minuto) entre lotes para que la cuota
+    se reinicie antes de continuar.
+    """
+    splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    chunks = splitter.split_documents(docs)
+    total = len(chunks)
+
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+
+    vectorstore = None
+    for i in range(0, total, batch_size):
+        batch = chunks[i:i + batch_size]
+        lote_num = i // batch_size + 1
+        total_lotes = (total + batch_size - 1) // batch_size
+        print(f"🧠 Generando embeddings — lote {lote_num}/{total_lotes} "
+              f"(fragmentos {i + 1}–{min(i + batch_size, total)} de {total})")
+
+        if vectorstore is None:
+            vectorstore = FAISS.from_documents(batch, embeddings)
+        else:
+            vectorstore.add_documents(batch)
+
+        # Solo esperar si todavía quedan lotes por procesar.
+        if i + batch_size < total:
+            print(f"⏳ Esperando {delay_seconds}s para no exceder la cuota gratuita de la API...")
+            time.sleep(delay_seconds)
+
     vectorstore.save_local(persist_path)
-    print(
-        f"📦 Índice vectorial guardado en '{persist_path}' ({len(chunks)} fragmentos)")
+    print(f"📦 Índice vectorial guardado en '{persist_path}' ({total} fragmentos)")
     return vectorstore
 
 
 def load_vectorstore(persist_path="vectorstore_index"):
     """Carga un índice FAISS ya creado previamente."""
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/gemini-embedding-001")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
     return FAISS.load_local(persist_path, embeddings, allow_dangerous_deserialization=True)
 
 
 if __name__ == "__main__":
-    # Ejecutar `python ingestion.py` procesa la carpeta sample_docs/ y crea el índice.
-    documentos = load_documents("sample_docs")
+    # Ejecutar `python ingestion.py` procesa 'docs/' (documentación curada de la empresa)
+    # y 'sample_docs/' (archivos de prueba/sueltos) y crea el índice combinado.
+    documentos = load_all_documents(["docs", "sample_docs"])
     if documentos:
         build_vectorstore(documentos)
     else:
