@@ -18,6 +18,12 @@ buscando información dentro de ellos. Este agente centraliza esos documentos en
 base de conocimiento conversacional, siempre disponible, que responde preguntas al
 instante.
 
+Como caso de estudio, el repositorio incluye la documentación curada de una empresa
+ficticia, **NexaDigital S.A.S.**, desarrolladora del producto **Nexa Knowledge AI**
+(casualmente, una plataforma de conocimiento con IA muy similar a este mismo desafío).
+La documentación cubre desde arquitectura de producto y API hasta RRHH, seguridad,
+legal y DevOps — organizada por categoría en `docs/`.
+
 ---
 
 ## 🏗️ Arquitectura
@@ -81,14 +87,103 @@ Aplicación **Gradio** con dos pestañas:
 
 ## 💬 Ejemplos de preguntas y respuestas
 
-Usando los documentos de ejemplo incluidos en `sample_docs/`:
+Usando la documentación curada de **NexaDigital S.A.S.** sobre su producto **Nexa
+Knowledge AI**, incluida en `docs/`:
 
-| Pregunta | Fuente | Respuesta esperada |
+| Pregunta | Fuente(s) | Respuesta esperada |
 |---|---|---|
-| ¿Cuál fue el producto más vendido en diciembre de 2015? | `ventas_2015.csv` | Plan Pro, con 780 unidades vendidas e ingresos de USD 23.400 |
-| ¿Qué lenguajes de programación se usan en el back-end de la plataforma de ventas? | `faq_tecnologia.json` | Python (FastAPI), PostgreSQL y Redis, con Celery para tareas asíncronas |
-| ¿Cuántos días de vacaciones tengo por año? | `politica_rrhh.md` | 15 días hábiles por año trabajado |
-| ¿Cuánto dura el proceso de onboarding? | `politica_rrhh.md` | 2 semanas, con actividades detalladas por día/semana |
+| ¿Quién puede eliminar un documento dentro de Nexa Knowledge AI y qué permisos necesita? | `product/MODELO_DE_PERMISOS.md`, `api/DOCUMENTOS_API.md`, `user-guide/GESTION_DE_DOCUMENTOS.md` | Solo usuarios con permisos de administración (`documents.delete`); los roles Supervisor, Administrador y Super Administrador pueden hacerlo |
+| ¿Puede un Editor crear un Agente IA? | `product/MODELO_DE_PERMISOS.md` | Sí, siempre que la organización le haya concedido el permiso correspondiente |
+| ¿Qué pasa con mis conversaciones anteriores si elimino un documento? | `support/FAQ.md` | El documento deja de estar disponible para futuras consultas, pero las conversaciones anteriores no se modifican automáticamente |
+| ¿Qué son los Embeddings y para qué se usan en la plataforma? | `support/FAQ.md`, `ai/ARQUITECTURA_RAG.md` | Representaciones vectoriales del contenido de los documentos, usadas para hacer búsquedas semánticas |
+| ¿Qué estados puede tener un documento durante su procesamiento? | `api/DOCUMENTOS_API.md`, `user-guide/GESTION_DE_DOCUMENTOS.md` | Cargando/Uploading, Validando, Procesando, Indexando, Disponible/Available, Error/Failed, Archivado, Eliminado |
+
+Esta última pregunta es un buen caso de prueba de "consistencia entre documentos": el
+estado de un documento aparece descrito tanto a nivel de API (`api/DOCUMENTOS_API.md`,
+en inglés técnico: `UPLOADING`, `VALIDATING`...) como a nivel funcional para el usuario
+final (`user-guide/GESTION_DE_DOCUMENTOS.md`, en español: "Cargando", "Procesando"...).
+El agente debería reconocer que ambas tablas describen el mismo flujo desde dos
+perspectivas distintas, sin contradecirse.
+Con la documentación actual (40 documentos), el agente ya puede responder preguntas bastante completas sobre funcionamiento del producto, arquitectura, administración, seguridad, negocio, legal y recursos humanos.
+
+Estas son **10 preguntas realistas** que un colaborador podría hacerle al agente:
+
+1. **¿Quién puede eliminar un documento dentro de Nexa Knowledge AI y qué permisos necesita?**
+
+   *El agente debería consultar el Modelo de Permisos y las Reglas de Negocio para explicar los roles autorizados y las restricciones.*
+
+---
+
+2. **¿Cómo funciona el Agente de IA cuando hago una pregunta sobre un manual interno?**
+
+   *Debería explicar el flujo RAG: consulta → búsqueda semántica → recuperación de documentos → construcción del contexto → generación de la respuesta.*
+
+---
+
+3. **¿Qué ocurre cuando subo una nueva versión de un documento?**
+
+   *El agente debería responder utilizando el Ciclo de Vida de los Documentos, Versionado del Producto y Gestión de Documentos.*
+
+---
+
+4. **¿Cuál es la diferencia entre los planes Professional, Business y Enterprise?**
+
+   *Debe comparar capacidades, límites, API, almacenamiento, usuarios, soporte e integraciones utilizando Comparativa de Planes y Planes y Precios.*
+
+---
+
+5. **¿Qué responsabilidades tiene un Administrador de la plataforma?**
+
+   *Debe resumir el Manual del Administrador, Configuración Global, Política de Seguridad y Reglas de Negocio.*
+
+---
+
+6. **¿Qué debo hacer si detecto un posible incidente de seguridad?**
+
+   *El agente debería indicar el procedimiento descrito en la Política de Seguridad, Cumplimiento Normativo y Políticas Internas.*
+
+---
+
+7. **¿Qué arquitectura utiliza Nexa Knowledge AI y por qué se eligió una arquitectura de microservicios?**
+
+   *Debe combinar información de Arquitectura Técnica, Arquitectura de Microservicios y Arquitectura Funcional.*
+
+---
+
+8. **¿Puedo utilizar ChatGPT u otra IA externa con información confidencial de la empresa?**
+
+   *La respuesta debería basarse en Políticas Internas, Política de Seguridad y Cumplimiento Normativo, indicando que solo pueden utilizarse herramientas autorizadas y que no debe compartirse información confidencial.*
+
+---
+
+9. **¿Qué pasa si un cliente deja de pagar su suscripción?**
+
+   *Debe responder utilizando Facturación y Términos de Uso, explicando suspensión del servicio, intentos de cobro y responsabilidades.*
+
+---
+
+10. **Soy un desarrollador nuevo. ¿Qué documentos debo leer durante mi primera semana?**
+
+*El agente debería generar un plan basado en el Manual de Onboarding, incluyendo Arquitectura Técnica, Arquitectura RAG, Reglas de Negocio, Convenciones Backend/Frontend y Política de Seguridad.*
+
+---
+
+## Ejemplos de preguntas más avanzadas
+
+Una de las fortalezas del agente será responder preguntas que requieran **combinar varios documentos**, por ejemplo:
+
+* *¿Qué documentos debo revisar para agregar un nuevo endpoint a la API de documentos?*
+* *¿Qué diferencias existen entre un Workspace y una Organización?*
+* *¿Cómo se autentica una aplicación externa antes de consumir la API?*
+* *¿Qué controles de seguridad protegen los documentos internos?*
+* *¿Cómo se recupera el sistema después de un desastre?*
+* *¿Qué reglas de negocio se aplican cuando un usuario elimina un documento?*
+* *¿Qué responsabilidades tiene el equipo DevOps durante un despliegue?*
+* *¿Qué documentos regulan el tratamiento de datos personales?*
+* *¿Qué arquitectura utiliza el motor RAG y cómo interactúa con el LLM?*
+* *¿Qué permisos necesita un usuario para administrar Workspaces y documentos?*
+
+Este tipo de consultas son precisamente las que demuestran el valor de un sistema RAG: el agente no responde desde un único documento, sino que **recupera información de múltiples fuentes, la relaciona y genera una respuesta unificada con contexto**, que es el objetivo principal de **Nexa Knowledge AI**.
 
 Si la pregunta no puede responderse con los documentos internos y se configuró
 `TAVILY_API_KEY`, el agente reformula la pregunta y busca en la web como respaldo,
