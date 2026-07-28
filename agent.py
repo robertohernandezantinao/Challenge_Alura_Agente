@@ -50,7 +50,11 @@ memory = SqliteSaver(conn)
 # --- Índice vectorial con los documentos internos ---
 try:
     vectorstore = load_vectorstore()
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 8})
+    # Con un corpus de decenas de documentos (docs/company, docs/product, docs/ai, etc.)
+    # k=8 se queda corto; k=12 da más margen para cubrir varias categorías a la vez.
+    # Si el corpus sigue creciendo (hacia 97 documentos), considera subirlo aún más
+    # o migrar a una estrategia de recuperación por área (ver metadata["area"] en ingestion.py).
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 12})
 except Exception as e:
     print(f"⚠️  No se encontró un índice vectorial. Ejecuta 'python ingestion.py' primero. ({e})")
     retriever = None
