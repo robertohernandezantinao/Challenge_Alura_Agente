@@ -8,52 +8,52 @@ La siguiente estructura está pensada para una empresa SaaS de nivel empresarial
 ---
 
 # 1. Empresa (`docs/company/`)
-
-| Nº | Documento | Estado |
+✅ Área completada
+| Nº | Documento                   | Estado |
 | -- | --------------------------- | ------ |
-| 1 | Empresa.md | 🟡 |
-| 2 | Historia de NexaDigital.md | 🟡 |
-| 3 | Misión, Visión y Valores.md | 🟡 |
-| 4 | Cultura Organizacional.md | ✅ |
-| 5 | Organigrama.md | 🟡 |
-| 6 | Áreas de la Empresa.md | 🟡 |
-| 7 | Código de Conducta.md | ✅ |
-| 8 | Glosario Corporativo.md | 🟡 |
+| 1  | Empresa.md                  | ✅      |
+| 2  | Historia de NexaDigital.md  | ✅      |
+| 3  | Misión, Visión y Valores.md | ✅      |
+| 4  | Cultura Organizacional.md   | ✅      |
+| 5  | Organigrama.md              | ✅      |
+| 6  | Áreas de la Empresa.md      | ✅      |
+| 7  | Código de Conducta.md       | ✅      |
+| 8  | Glosario Corporativo.md     | ✅      |
 
 ---
 
 # 2. Producto (`docs/product/`)
-
-| Nº | Documento | Estado |
-| -- | ---------------------------------------- | ------ |
-| 9 | Visión General del Producto.md | ✅ |
-| 10 | Arquitectura Funcional.md | ✅ |
-| 11 | Casos de Uso.md | ✅ |
-| 12 | Modelo de Permisos.md | ✅ |
-| 13 | Reglas de Negocio.md | ✅ |
-| 14 | Estados del Sistema.md | ✅ |
-| 15 | Glosario del Producto.md | ✅ |
-| 16 | Roadmap del Producto.md | ✅ |
-| 17 | Limitaciones del Sistema.md | ✅ |
-| 18 | Preguntas Frecuentes del Producto.md | ✅ |
-| 19 | Ciclo de Vida de los Documentos.md | ✅ |
-| 20 | Versionado del Producto.md | ✅ |
+✅ Área completada
+| Nº | Documento                                      | Estado |
+| -- | ---------------------------------------------- | ------ |
+| 9  | Introducción del Producto.md                   | ✅      |
+| 10 | Arquitectura Funcional de Nexa Knowledge AI.md | ✅      |
+| 11 | Casos de Uso.md                                | ✅      |
+| 12 | Modelo de Datos.md                             | ✅      |
+| 13 | Glosario del Producto.md                       | ✅      |
+| 14 | Reglas de Negocio.md                           | ✅      |
+| 15 | Modelo de Permisos.md                          | ✅      |
+| 16 | Ciclo de Vida de un Documento.md               | ✅      |
+| 17 | Roadmap del Producto.md                        | ✅      |
+| 18 | Limitaciones del Sistema.md                    | ✅      |
+| 19 | Requisitos Funcionales.md                      | ✅      |
+| 20 | Requisitos No Funcionales.md                   | ✅      |
 
 ---
 
 # 3. Manual del Usuario (`docs/user-guide/`)
-
-| Nº | Documento | Estado |
-| -- | -------------------------------------- | ------ |
-| 21 | Introducción.md | 🟡 |
-| 22 | Primeros Pasos.md | 🟡 |
-| 23 | Gestión de Usuarios.md | 🟡 |
-| 24 | Gestión de Roles.md | 🟡 |
-| 25 | Gestión de Workspaces.md | 🟡 |
-| 26 | Gestión de Documentos.md | ✅ |
-| 27 | Uso del Chat IA.md | 🟡 |
-| 28 | Configuración Personal.md | 🟡 |
-| 29 | Solución de Problemas.md | 🟡 |
+✅ Área completada
+| Nº | Documento                   | Estado |
+| -- | --------------------------- | ------ |
+| 21 | Introducción.md             | ✅      |
+| 22 | Primeros Pasos.md           | ✅      |
+| 23 | Gestión de Usuarios.md      | ✅      |
+| 24 | Gestión de Roles.md         | ✅      |
+| 25 | Gestión de Workspaces.md    | ✅      |
+| 26 | Gestión de Documentos.md    | ✅      |
+| 27 | Chat IA.md                  | ✅      |
+| 28 | Configuración del Perfil.md | ✅      |
+| 29 | Solución de Problemas.md    | ✅      |
 
 ---
 
@@ -187,38 +187,40 @@ La siguiente estructura está pensada para una empresa SaaS de nivel empresarial
 
 # 13. Recursos Humanos (`docs/hr/`)
 
-| Nº | Documento | Estado |
-| -- | --------------------------- | ------ |
-| 95 | Manual de Onboarding.md | ✅ |
-| 96 | Beneficios.md | ✅ |
-| 97 | Políticas Internas.md | ✅ |
+| Nº | Documento               | Estado |
+| -- | ----------------------- | ------ |
+| 95 | Manual de Onboarding.md | ✅      |
+| 96 | Beneficios.md           | ✅      |
+| 97 | Políticas Internas.md   | ✅      |
+
 
 ---
 
-# Resumen General
+# Resumen General(Actualizado)
 
-| Área | Total | Creados | Pendientes |
-|------|------:|---------:|-----------:|
-| Empresa | 8 | 2 | 6 |
-| Producto | 12 | 12 | 0 |
-| Manual del Usuario | 9 | 1 | 8 |
-| Inteligencia Artificial | 10 | 2 | 8 |
-| API | 10 | 3 | 7 |
-| Administración | 7 | 2 | 5 |
-| Seguridad | 8 | 1 | 7 |
-| Ingeniería | 10 | 4 | 6 |
-| DevOps | 6 | 3 | 3 |
-| Soporte | 4 | 2 | 2 |
-| Comercial | 5 | 3 | 2 |
-| Legal | 5 | 2 | 3 |
-| Recursos Humanos | 3 | 3 | 0 |
+| Área                    | Total | Creados | Pendientes |
+| ----------------------- | ----: | ------: | ---------: |
+| Empresa                 |     8 |       8 |          0 |
+| Producto                |    12 |      12 |          0 |
+| Manual del Usuario      |     9 |       9 |          0 |
+| Inteligencia Artificial |    10 |       2 |          8 |
+| API                     |    10 |       3 |          7 |
+| Administración          |     7 |       2 |          5 |
+| Seguridad               |     8 |       1 |          7 |
+| Ingeniería              |    10 |       4 |          6 |
+| DevOps                  |     6 |       3 |          3 |
+| Soporte                 |     4 |       2 |          2 |
+| Comercial               |     5 |       3 |          2 |
+| Legal                   |     5 |       2 |          3 |
+| Recursos Humanos        |     3 |       3 |          0 |
+
 
 ---
 
 # Estado Global
 
 - **Total de documentos:** **97**
-- **Documentos creados:** **40** ✅
-- **Documentos pendientes:** **57** 🟡
+- **Documentos creados:** **55** ✅
+- **Documentos pendientes:** **42** 🟡
 
-**Progreso general:** **41.2 %** completado.
+**Progreso general:** **56.7 %** completado.
